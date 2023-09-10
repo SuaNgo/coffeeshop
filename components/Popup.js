@@ -10,6 +10,7 @@ const Popup = ({ isOpen, closeModal, id, setUpdateDatas, type }) => {
     else if (type === "categories")
       await axios.delete("/api/categories?id=" + id);
     else if (type === "setting") await axios.delete("/api/settings?id=" + id);
+    else if (type === "order") await axios.delete("/api/orders?id=" + id);
     setUpdateDatas(true);
     closeModal();
   };

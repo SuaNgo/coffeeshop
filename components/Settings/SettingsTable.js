@@ -16,7 +16,6 @@ const SettingsTable = ({ data, setUpdateDatas }) => {
           </Link>
           <button
             className="btn-red"
-            href={"/settings/delete/" + data._id}
             onClick={() => {
               setIsOpen(true);
             }}

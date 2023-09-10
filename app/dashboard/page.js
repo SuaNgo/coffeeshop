@@ -30,7 +30,7 @@ const Dashboard = () => {
             </div>
           )}
         </div>
-        <div className="grid-cols-4 grid gap-6 max-[768px]:grid-cols-2 max-[425px]:grid-cols-1">
+        <div className="grid-cols-2 grid gap-6 max-[768px]:grid-cols-2 max-[425px]:grid-cols-1">
           <div className="h-[200px]  bg-white shadow-2xl border-2 border-gray-200 p-4 border-solid mb-4 rounded-lg relative">
             <div className="flex justify-between">
               <span className=" text-[20px]">Earning</span>
@@ -68,7 +68,6 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="w-[60%] h-[300px] shadow-2xl border-2 border-gray-200 py-4 border-solid mb-4 rounded-lg"></div>
       </Layout>
     </main>
   );

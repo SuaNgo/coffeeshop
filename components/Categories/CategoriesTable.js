@@ -35,7 +35,6 @@ const CategoriesTable = ({ category, setUpdateDatas }) => {
             </Link>
             <button
               className="max-[425px]:text-[16px] text-center p-1 text-[20px] border-red-600 border-2 rounded-md font-bold"
-              href={"/categories/delete/" + category._id}
               onClick={() => {
                 setIsOpen(true);
               }}
