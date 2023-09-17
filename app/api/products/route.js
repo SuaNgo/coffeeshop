@@ -11,7 +11,15 @@ export async function POST(request) {
   if (check) {
     const res = await request.json();
 
-    const { product, category, description, price, images, properties } = res;
+    const {
+      product,
+      category,
+      description,
+      price,
+      images,
+      properties,
+      discount,
+    } = res;
 
     await Product.create({
       product,
@@ -20,6 +28,7 @@ export async function POST(request) {
       price,
       images,
       properties,
+      discount,
     });
 
     return NextResponse.json(res);
@@ -50,8 +59,16 @@ export async function PUT(request) {
 
   const res = await request.json();
 
-  const { product, category, description, price, properties, images, _id } =
-    res;
+  const {
+    product,
+    category,
+    description,
+    price,
+    properties,
+    images,
+    discount,
+    _id,
+  } = res;
 
   return NextResponse.json(
     await Product.updateOne(
@@ -63,6 +80,7 @@ export async function PUT(request) {
         price,
         properties,
         images,
+        discount,
       }
     )
   );

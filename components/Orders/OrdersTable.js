@@ -5,7 +5,12 @@ import { useState } from "react";
 
 const OrdersTable = ({ data, setUpdateDatas }) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const propData =
+    data.line_items[0].price_data.product_data.description.split(",");
+  const dupeData = {};
+  propData.forEach((element) => {
+    dupeData[element] = (dupeData[element] || 0) + 1;
+  });
   return (
     <>
       <div className="grid grid-cols-5 mb-8 shadow-xl rounded-xl border ">
@@ -52,9 +57,13 @@ const OrdersTable = ({ data, setUpdateDatas }) => {
           <h1 className="max-[425px]:text-[20px] text-[24px] font-title font-medium mb-4">
             Thanh toán:{" "}
             <span className="font-bold text-red-600">
-              {data.line_items[0].price_data.unit_amount *
-                data.line_items[0].quantity}{" "}
-              VND
+              {(
+                data.line_items[0].price_data.unit_amount *
+                data.line_items[0].quantity
+              )
+                .toString()
+                .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")}
+              <span>&#8363;</span>
             </span>
           </h1>
           <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
@@ -66,13 +75,18 @@ const OrdersTable = ({ data, setUpdateDatas }) => {
           <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
             Loại:{" "}
             <span className="text-gray-400 font-bold">
-              {data.line_items[0].price_data.product_data.description}
-            </span>
-          </h1>
-          <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
-            Số lượng:{" "}
-            <span className="text-gray-400 font-bold">
-              {data.line_items[0].quantity}
+              <div className="flex flex-row gap-10">
+                <div className="flex flex-col">
+                  {Object.keys(dupeData).map((key, index) => (
+                    <div key={index}>{key}</div>
+                  ))}
+                </div>
+                <div className="flex flex-col ">
+                  {Object.values(dupeData).map((value, index) => (
+                    <div key={index}>x{value}</div>
+                  ))}
+                </div>
+              </div>
             </span>
           </h1>
           <div className="flex flex-col gap-2">

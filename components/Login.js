@@ -75,6 +75,8 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   value={password}
                   className="my-2 rounded-md"
+                  pattern="^(?=[a-zA-Z0-9._]{6,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
+                  title="has special characters"
                 />
               </label>
               <button
@@ -84,26 +86,6 @@ const Login = () => {
                 <span className="text-[16px] leading-4">Login</span>
               </button>
             </form>
-            <div>
-              <span className='flex flex-row before:content-[""] before:flex-1 before:border-b-2 before:border-solid before:m-auto after:content-[""] after:flex-1 after:border-b-2 after:border-solid after:m-auto before:mr-[10px] after:ml-[10px] after:border-gray-500 before:border-gray-500 mb-4'>
-                or
-              </span>
-            </div>
-            <button
-              className="flex border border-green-400 rounded-md w-full items-center py-1 justify-center"
-              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            >
-              <Image
-                src="/google-icon.webp"
-                alt="google icon"
-                className=""
-                width={30}
-                height={30}
-              />
-              <span className="text-[16px] leading-4">
-                Continue with Google
-              </span>
-            </button>
           </div>
         </div>
       </div>

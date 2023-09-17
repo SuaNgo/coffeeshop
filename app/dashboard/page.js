@@ -49,24 +49,6 @@ const Dashboard = () => {
               <span className="text-[30px]">50</span>
             </div>
           </div>
-          <div className="h-[200px]  bg-white shadow-2xl border-2 border-gray-200 p-4 border-solid mb-4 rounded-lg relative">
-            <div className="flex justify-between">
-              <span className="text-[20px]">Comments</span>
-              <FontAwesomeIcon icon={faMessage} className="text-xl" />
-            </div>
-            <div className="-translate-x-1/2 -translate-y-1/2 top-2/3 left-1/2 absolute">
-              <span className="text-[30px]">50</span>
-            </div>
-          </div>
-          <div className="h-[200px]  bg-white shadow-2xl border-2 border-gray-200 p-4 border-solid mb-4 rounded-lg relative">
-            <div className="flex justify-between">
-              <span className="text-[20px]">Rating</span>
-              <FontAwesomeIcon icon={faStar} className="text-xl" />
-            </div>
-            <div className="-translate-x-1/2 -translate-y-1/2 top-2/3 left-1/2 absolute">
-              <span className="text-[30px]">8/10</span>
-            </div>
-          </div>
         </div>
       </Layout>
     </main>

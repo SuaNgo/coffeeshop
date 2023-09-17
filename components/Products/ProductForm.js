@@ -19,6 +19,7 @@ const ProductForm = ({
   images: existingImage,
   description: existingDescription,
   price: existingPrice,
+  discount: existingDiscount,
 }) => {
   const [product, setProduct] = useState(existingProduct || "");
   const [categories, setCategories] = useState([]);
@@ -30,7 +31,7 @@ const ProductForm = ({
   const [description, setDescription] = useState(existingDescription || "");
   const [price, setPrice] = useState(existingPrice || "");
   const [isLoading, setIsLoading] = useState(false);
-
+  const [discount, setDiscount] = useState(existingDiscount || "");
   const router = useRouter();
   useEffect(() => {
     axios.get("/api/categories").then((res) => {
@@ -46,6 +47,7 @@ const ProductForm = ({
       description,
       price,
       images,
+      discount,
     };
     if (_id) {
       axios.put("/api/products", { ...products, _id });
@@ -71,8 +73,6 @@ const ProductForm = ({
 
   const removeImage = async (e, link) => {
     e.preventDefault();
-    //const res = await axios.delete("/api/images", { link });
-
     setImage((currentImage) => {
       return currentImage.filter((val) => val !== link);
     });
@@ -82,7 +82,6 @@ const ProductForm = ({
     setProductProperties((prev) => {
       const newProductProps = { ...prev };
       newProductProps[propName] = value;
-      console.log(newProductProps);
       return newProductProps;
     });
   };
@@ -214,7 +213,7 @@ const ProductForm = ({
           </span>
           <textarea
             type="text"
-            placeholder="Description"
+            placeholder="Miêu tả"
             value={description}
             onChange={(e) => {
               setDescription(e.target.value);
@@ -222,17 +221,30 @@ const ProductForm = ({
           />
         </label>
       </div>
-      <div className="mt-2">
+      <div className="mt-2 flex flex-row gap-4">
         <label className="text-gray-600 text-[20px] font-title font-normal">
           <span className="text-gray-600 text-[20px] font-title font-medium">
             Giá sản phẩm(VND)
           </span>
           <input
             type="number"
-            placeholder="Price"
+            placeholder="Giá sản phẩm"
             value={price}
             onChange={(e) => {
               setPrice(e.target.value);
+            }}
+          />
+        </label>
+        <label className="text-gray-600 text-[20px] font-title font-normal">
+          <span className="text-gray-600 text-[20px] font-title font-medium">
+            Giảm giá
+          </span>
+          <input
+            type="number"
+            placeholder="Giảm giá(%)"
+            value={discount}
+            onChange={(e) => {
+              setDiscount(e.target.value);
             }}
           />
         </label>
