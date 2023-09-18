@@ -10,8 +10,51 @@ export async function GET(request) {
     return NextResponse.json("Not admin");
   } else {
     await mongooseConnect();
+    const url = new URL(request.url);
+    if (url.searchParams.get("id")) {
+      return NextResponse.json(
+        await Order.findById(url.searchParams.get("id"))
+      );
+    }
+
     return NextResponse.json(await Order.find());
   }
+}
+
+export async function PUT(request) {
+  await mongooseConnect();
+
+  const res = await request.json();
+
+  const {
+    _id,
+    line_items,
+    name,
+    email,
+    city,
+    postalCode,
+    streetAddress,
+    country,
+    status,
+    employee,
+  } = res;
+
+  return NextResponse.json(
+    await Order.updateOne(
+      { _id },
+      {
+        line_items,
+        name,
+        email,
+        city,
+        postalCode,
+        streetAddress,
+        country,
+        status,
+        employee,
+      }
+    )
+  );
 }
 
 export async function DELETE(request) {

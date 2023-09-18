@@ -20,21 +20,23 @@ const ProductForm = ({
   description: existingDescription,
   price: existingPrice,
   discount: existingDiscount,
+  quantity: existingQuantity,
 }) => {
   const [product, setProduct] = useState(existingProduct || "");
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState(existingCategory || "");
   const [productProperties, setProductProperties] = useState(
-    existingProperties || {}
+    existingProperties || ""
   );
   const [images, setImage] = useState(existingImage || []);
   const [description, setDescription] = useState(existingDescription || "");
   const [price, setPrice] = useState(existingPrice || "");
   const [isLoading, setIsLoading] = useState(false);
   const [discount, setDiscount] = useState(existingDiscount || "");
+  const [quantity, setQuantity] = useState(existingQuantity || "");
   const router = useRouter();
   useEffect(() => {
-    axios.get("/api/categories").then((res) => {
+    axios.get("/api/categories?product=").then((res) => {
       setCategories(res.data);
     });
   }, []);
@@ -48,6 +50,7 @@ const ProductForm = ({
       price,
       images,
       discount,
+      quantity,
     };
     if (_id) {
       axios.put("/api/products", { ...products, _id });
@@ -78,27 +81,27 @@ const ProductForm = ({
     });
   };
 
-  const setProductProp = (propName, value) => {
-    setProductProperties((prev) => {
-      const newProductProps = { ...prev };
-      newProductProps[propName] = value;
-      return newProductProps;
-    });
-  };
+  // const setProductProp = (propName, value) => {
+  //   setProductProperties((prev) => {
+  //     const newProductProps = { ...prev };
+  //     newProductProps[propName] = value;
+  //     return newProductProps;
+  //   });
+  // };
 
-  const propertiesToFill = [];
-  if (categories.length > 0 && category) {
-    let catInfo = categories.find(({ _id }) => _id === category);
-    propertiesToFill.push(...catInfo.properties);
+  // const propertiesToFill = [];
+  // if (categories.length > 0 && category) {
+  //   let catInfo = categories.find(({ _id }) => _id === category);
+  //   propertiesToFill.push(...catInfo.properties);
 
-    while (catInfo?.parent?._id) {
-      const parentCat = categories.find(
-        ({ _id }) => _id === catInfo?.parent?._id
-      );
-      propertiesToFill.push(...parentCat.properties);
-      catInfo = parentCat;
-    }
-  }
+  //   while (catInfo?.parent?._id) {
+  //     const parentCat = categories.find(
+  //       ({ _id }) => _id === catInfo?.parent?._id
+  //     );
+  //     propertiesToFill.push(...parentCat.properties);
+  //     catInfo = parentCat;
+  //   }
+  // }
 
   return (
     <form onSubmit={createProduct}>
@@ -133,7 +136,7 @@ const ProductForm = ({
               </option>
             ))}
         </select>
-        {propertiesToFill.length > 0 &&
+        {/* {propertiesToFill.length > 0 &&
           propertiesToFill.map((p) => (
             <div key={p.name} className="">
               <label>{p.name[0].toUpperCase() + p.name.substring(1)}</label>
@@ -150,8 +153,23 @@ const ProductForm = ({
                 </select>
               </div>
             </div>
-          ))}
+          ))} */}
       </label>
+      <div className="mt-2">
+        <label className="text-gray-600 text-[20px] font-title font-normal">
+          <span className="text-gray-600 text-[20px] font-title font-medium">
+            Mẫu mã, chủng loại
+          </span>
+          <textarea
+            type="text"
+            placeholder="cách nhau dấu phẩy, không khoảng trắng"
+            value={productProperties}
+            onChange={(e) => {
+              setProductProperties(e.target.value);
+            }}
+          />
+        </label>
+      </div>
       <div className="mt-2">
         <label className="text-gray-600 text-[20px] font-title font-normal">
           <span className="text-gray-600 text-[20px] font-title font-medium">
@@ -221,7 +239,7 @@ const ProductForm = ({
           />
         </label>
       </div>
-      <div className="mt-2 flex flex-row gap-4">
+      <div className="mt-2 grid grid-cols-2 gap-4">
         <label className="text-gray-600 text-[20px] font-title font-normal">
           <span className="text-gray-600 text-[20px] font-title font-medium">
             Giá sản phẩm(VND)
@@ -245,6 +263,21 @@ const ProductForm = ({
             value={discount}
             onChange={(e) => {
               setDiscount(e.target.value);
+            }}
+          />
+        </label>
+      </div>
+      <div>
+        <label className="text-gray-600 text-[20px] font-title font-normal">
+          <span className="text-gray-600 text-[20px] font-title font-medium">
+            Số lượng hàng
+          </span>
+          <input
+            type="number"
+            placeholder="Số lượng sản phẩm"
+            value={quantity}
+            onChange={(e) => {
+              setQuantity(e.target.value);
             }}
           />
         </label>

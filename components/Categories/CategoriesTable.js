@@ -14,9 +14,11 @@ const CategoriesTable = ({ category, setUpdateDatas }) => {
         key={category._id}
       >
         <div className="col-span-2 p-4 ">
-          <span className="max-[425px]:text-[20px] text-[24px] font-title font-medium mb-4">
-            {category.name}
-          </span>
+          <Link href={"/categories/" + category._id}>
+            <span className="max-[425px]:text-[20px] text-[24px] font-title font-medium mb-4">
+              {category.name}
+            </span>
+          </Link>
         </div>
         <div className="col-span-2 p-4">
           <span className="max-[425px]:text-[20px] text-[24px] font-title font-medium mb-4">
@@ -45,6 +47,7 @@ const CategoriesTable = ({ category, setUpdateDatas }) => {
           </div>
         </div>
       </div>
+
       {isOpen ? (
         <Popup
           isOpen={isOpen}

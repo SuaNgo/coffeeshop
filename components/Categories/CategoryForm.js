@@ -6,14 +6,13 @@ const CategoryForm = ({
   _id,
   name: existingName,
   parentCategory: existingParentCategory,
-  properties: existingProperties,
 }) => {
   const [name, setName] = useState(existingName || "");
-  const [categories, setCategories] = useState(existingProperties || []);
+  const [categories, setCategories] = useState([]);
   const [parentCategory, setParentCategory] = useState(
     existingParentCategory || ""
   );
-  const [properties, setProperties] = useState(existingProperties || []);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -27,10 +26,6 @@ const CategoryForm = ({
     const category = {
       name,
       parentCategory,
-      properties: properties.map((p) => ({
-        name: p.name,
-        values: p.values,
-      })),
     };
     if (_id) {
       await axios.put("/api/categories", { ...category, _id });
@@ -41,32 +36,6 @@ const CategoryForm = ({
     router.push("/categories");
   };
 
-  const addProperty = () => {
-    setProperties((prev) => {
-      return [...prev, { name: "", values: "" }];
-    });
-  };
-  const handlePropertyNameChange = (index, property, newName) => {
-    setProperties((prev) => {
-      const properties = [...prev];
-      properties[index].name = newName;
-      return properties;
-    });
-  };
-  const handlePropertyValuesChange = (index, property, newValues) => {
-    setProperties((prev) => {
-      const properties = [...prev];
-      properties[index].values = newValues;
-      return properties;
-    });
-  };
-  const removeProperty = (indexToRemove) => {
-    setProperties((prev) => {
-      return [...prev].filter((p, pIndex) => {
-        return pIndex !== indexToRemove;
-      });
-    });
-  };
   return (
     <>
       <form onSubmit={createCategory}>
@@ -93,48 +62,6 @@ const CategoryForm = ({
                 </option>
               ))}
           </select>
-        </div>
-        <div className="mb-2">
-          <label className="max-[425px]:text-[20px] text-[24px] font-title font-medium block">
-            Đặc điểm
-          </label>
-          <button
-            onClick={addProperty}
-            type="button"
-            className="text-[20px] p-1 text-center border-blue-600 bg-blue-600 border-2 rounded-md font-bold text-white mt-2"
-          >
-            Thêm miêu tả
-          </button>
-          {properties.length > 0 &&
-            properties.map((property, index) => (
-              <div key={index} className="flex gap-1 mt-4">
-                <input
-                  type="text"
-                  value={property.name}
-                  className="mb-0"
-                  onChange={(ev) =>
-                    handlePropertyNameChange(index, property, ev.target.value)
-                  }
-                  placeholder="phân loại (màu sắc, kiểu dáng)"
-                />
-                <input
-                  type="text"
-                  className="mb-0"
-                  onChange={(ev) =>
-                    handlePropertyValuesChange(index, property, ev.target.value)
-                  }
-                  value={property.values}
-                  placeholder='giá trị cách nhau bởi ","'
-                />
-                <button
-                  onClick={() => removeProperty(index)}
-                  type="button"
-                  className="max-[425px]:text-[16px] text-center p-1 text-[20px] border-red-600 border-2 rounded-md font-bold bg-red-600 text-white"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
         </div>
         <div className="flex gap-1">
           {_id ? (

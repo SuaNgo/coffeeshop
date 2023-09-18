@@ -1,268 +1,192 @@
 "use client";
 
-import {
-  faPaperclip,
-  faTrash,
-  faUpload,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { ClipLoader } from "react-spinners";
+import { useSession } from "next-auth/react";
 
-const ProductForm = ({
+const OrderForm = ({
   _id,
-  product: existingProduct,
-  properties: existingProperties,
-  category: existingCategory,
-  images: existingImage,
-  description: existingDescription,
-  price: existingPrice,
+  name: existingName,
+  email: existingEmail,
+  city: existingCity,
+  postalCode: existingPostalCode,
+  country: existingCountry,
+  streetAddress: existingAddress,
+  line_items: existingItems,
+  status: existingStatus,
+  employee: existingEmployee,
 }) => {
-  const [product, setProduct] = useState(existingProduct || "");
-  const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState(existingCategory || "");
-  const [productProperties, setProductProperties] = useState(
-    existingProperties || {}
-  );
-  const [images, setImage] = useState(existingImage || []);
-  const [description, setDescription] = useState(existingDescription || "");
-  const [price, setPrice] = useState(existingPrice || "");
-  const [isLoading, setIsLoading] = useState(false);
-
   const router = useRouter();
-  useEffect(() => {
-    axios.get("/api/categories").then((res) => {
-      setCategories(res.data);
-    });
-  }, []);
-  const createProduct = async (e) => {
+  const { data: session } = useSession();
+  const roleCheck = session?.user.role === "admin";
+  const [status, setStatus] = useState(existingStatus || "");
+
+  const changeOrder = async (e) => {
     e.preventDefault();
-    const products = {
-      product,
-      category,
-      properties: productProperties,
-      description,
-      price,
-      images,
+    const order = {
+      existingName,
+      existingEmail,
+      existingCity,
+      existingPostalCode,
+      existingCountry,
+      existingAddress,
+      existingItems,
+      status,
+      employee: session?.user.role,
     };
-    if (_id) {
-      axios.put("/api/products", { ...products, _id });
-    } else {
-      axios.post("/api/products", products);
-    }
 
-    router.push("/products");
+    await axios.put("/api/orders", { ...order, _id });
+
+    router.push("/orders");
   };
-
-  const uploadImage = async (e) => {
-    const files = [...e.target.files];
-    const data = new FormData();
-    setIsLoading(true);
-    files.forEach((file) => data.append("file", file));
-
-    const res = await axios.post("/api/images", data);
-    setImage((existingImage) => {
-      return [...existingImage, ...res.data];
-    });
-    setIsLoading(false);
-  };
-
-  const removeImage = async (e, link) => {
-    e.preventDefault();
-    //const res = await axios.delete("/api/images", { link });
-
-    setImage((currentImage) => {
-      return currentImage.filter((val) => val !== link);
-    });
-  };
-
-  const setProductProp = (propName, value) => {
-    setProductProperties((prev) => {
-      const newProductProps = { ...prev };
-      newProductProps[propName] = value;
-      console.log(newProductProps);
-      return newProductProps;
-    });
-  };
-
-  const propertiesToFill = [];
-  if (categories.length > 0 && category) {
-    let catInfo = categories.find(({ _id }) => _id === category);
-    propertiesToFill.push(...catInfo.properties);
-
-    while (catInfo?.parent?._id) {
-      const parentCat = categories.find(
-        ({ _id }) => _id === catInfo?.parent?._id
-      );
-      propertiesToFill.push(...parentCat.properties);
-      catInfo = parentCat;
-    }
-  }
+  const propData =
+    existingItems[0].price_data.product_data.description.split(",");
+  const dupeData = {};
+  propData.forEach((element) => {
+    dupeData[element] = (dupeData[element] || 0) + 1;
+  });
 
   return (
-    <form onSubmit={createProduct}>
-      <label className="text-gray-600 text-[20px] font-title font-normal">
-        <span className="text-gray-600 text-[20px] font-title font-medium">
-          Tên sản phẩm
-        </span>
-        <input
-          type="text"
-          placeholder="Sản phẩm"
-          value={product}
-          onChange={(e) => {
-            setProduct(e.target.value);
-          }}
-        />
-      </label>
-      <label className="text-gray-600 text-[20px] font-title font-normal">
-        <span className="text-gray-600 text-[20px] font-title font-medium">
-          Phân loại sản phẩm
-        </span>
-        <select
-          value={category}
-          onChange={(e) => {
-            setCategory(e.target.value);
-          }}
-        >
-          <option value="">None</option>
-          {categories.length > 0 &&
-            categories.map((category) => (
-              <option key={category._id} value={category._id}>
-                {category.name}
-              </option>
-            ))}
-        </select>
-        {propertiesToFill.length > 0 &&
-          propertiesToFill.map((p) => (
-            <div key={p.name} className="">
-              <label>{p.name[0].toUpperCase() + p.name.substring(1)}</label>
-              <div>
-                <select
-                  value={productProperties[p.name]}
-                  onChange={(e) => setProductProp(p.name, e.target.value)}
-                >
-                  {p.values.split(",").map((v, index) => (
-                    <option key={index} value={v}>
-                      {v}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          ))}
-      </label>
-      <div className="mt-2">
-        <label className="text-gray-600 text-[20px] font-title font-normal">
-          <span className="text-gray-600 text-[20px] font-title font-medium">
-            Hình ảnh sản phẩm
-          </span>
-          <div className="my-2 flex gap-2">
-            {images?.length > 0 &&
-              images.map((link) => (
-                <a
-                  href={link}
-                  target="_blank"
-                  key={link}
-                  className="h-24 bg-white shadow-sm rounded-sm relative"
-                >
-                  <button
-                    onClick={(e) => removeImage(e, link)}
-                    className="w-6 h-6 leading-4 text-[16px] rounded-md absolute -right-2 -top-2 text-white bg-red-500"
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
-                  {/\.(jpg|jpeg|png|webp|avif|gif)$/.test(link) ? (
-                    <img src={link} alt="" className="h-20 rounded-md" />
-                  ) : (
-                    <div className="bg-gray-200 h-20 p-2 rounded-md flex items-center gap-1">
-                      <FontAwesomeIcon icon={faPaperclip} />
-                      {link.split("/")[3].substring(13)}
-                    </div>
-                  )}
-                </a>
-              ))}
-
-            <label className="w-20 h-20 cursor-pointer text-center flex flex-col items-center justify-center text-sm gap-1 text-primary bg-white shadow-xl border-2 border-primary rounded-md">
-              {isLoading ? (
-                <>
-                  <ClipLoader size={18} />
-                  <div>Dang tai...</div>
-                </>
-              ) : (
-                <>
-                  <FontAwesomeIcon icon={faUpload} />
-                  <div>Add image</div>
-                </>
-              )}
-
-              <input
-                multiple
-                type="file"
-                onChange={uploadImage}
-                className="hidden"
-              />
-            </label>
+    <>
+      <form onSubmit={changeOrder}>
+        <div className="grid grid-cols-5 mb-8 shadow-xl rounded-xl border ">
+          <div className="col-span-1 p-4">
+            <h1 className="max-[425px]:text-[20px] text-[24px] font-title font-medium mb-4">
+              Mã đơn
+            </h1>
+            <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4 break-words">
+              {_id}
+            </h1>
           </div>
-        </label>
-      </div>
-      <div className="mt-2">
-        <label className="text-gray-600 text-[20px] font-title font-normal">
-          <span className="text-gray-600 text-[20px] font-title font-medium">
-            Miêu tả sản phẩm
-          </span>
-          <textarea
-            type="text"
-            placeholder="Description"
-            value={description}
-            onChange={(e) => {
-              setDescription(e.target.value);
-            }}
-          />
-        </label>
-      </div>
-      <div className="mt-2">
-        <label className="text-gray-600 text-[20px] font-title font-normal">
-          <span className="text-gray-600 text-[20px] font-title font-medium">
-            Giá sản phẩm(VND)
-          </span>
-          <input
-            type="number"
-            placeholder="Price"
-            value={price}
-            onChange={(e) => {
-              setPrice(e.target.value);
-            }}
-          />
-        </label>
-      </div>
+          <div className="flex flex-col col-span-2 p-4">
+            <h1 className="max-[425px]:text-[20px] text-[24px] font-title font-medium mb-4">
+              Thông tin đơn hàng
+            </h1>
+            <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
+              Tên khách hàng:{" "}
+              <span className="text-gray-400 font-bold">{existingName}</span>
+            </h1>
+            <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
+              Email:{" "}
+              <span className="text-gray-400 font-bold">{existingEmail}</span>
+            </h1>
+            <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
+              Thành phố:{" "}
+              <span className="text-gray-400 font-bold">{existingCity}</span>
+            </h1>
+            <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
+              Mã bưu chính:{" "}
+              <span className="text-gray-400 font-bold">
+                {existingPostalCode}
+              </span>
+            </h1>
+            <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
+              Quốc gia:{" "}
+              <span className="text-gray-400 font-bold">{existingCountry}</span>
+            </h1>
+            <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
+              Địa chỉ:{" "}
+              <span className="text-gray-400 font-bold">{existingAddress}</span>
+            </h1>
+          </div>
 
-      {_id ? (
-        <>
-          <button
-            type="submit"
-            className="text-[20px] p-1 text-center border-blue-600 bg-blue-600 border-2 rounded-md font-bold text-white mt-2"
-          >
-            Sửa sản phẩm
-          </button>
-          <button
-            onClick={() => router.push("/products")}
-            className="text-[20px] p-1 text-center border-2 border-gray-400 rounded-md font-bold text-white mt-2 bg-gray-400 ml-4"
-          >
-            Quay lại
-          </button>
-        </>
-      ) : (
-        <button
-          type="submit"
-          className="text-[20px] p-1 text-center border-blue-600 bg-blue-600 border-2 rounded-md font-bold text-white mt-2"
-        >
-          Thêm sản phẩm
-        </button>
-      )}
-    </form>
+          <div className="flex flex-col p-4 col-span-2 max-[425px]:px-1">
+            <h1 className="max-[425px]:text-[20px] text-[24px] font-title font-medium mb-4">
+              Thanh toán:{" "}
+              <span className="font-bold text-red-600">
+                {(
+                  existingItems[0].price_data.unit_amount *
+                  existingItems[0].quantity
+                )
+                  .toString()
+                  .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.")}
+                <span>&#8363;</span>
+              </span>
+            </h1>
+            <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
+              Tên sản phẩm:{" "}
+              <span className="text-gray-400 font-bold">
+                {existingItems[0].price_data.product_data.name}
+              </span>
+            </h1>
+            <h1 className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
+              Loại:{" "}
+              <span className="text-gray-400 font-bold">
+                <div className="flex flex-row gap-10">
+                  <div className="flex flex-col">
+                    {Object.keys(dupeData).map((key, index) => (
+                      <div key={index}>{key}</div>
+                    ))}
+                  </div>
+                  <div className="flex flex-col ">
+                    {Object.values(dupeData).map((value, index) => (
+                      <div key={index}>x{value}</div>
+                    ))}
+                  </div>
+                </div>
+              </span>
+            </h1>
+
+            <div className="flex flex-col gap-2">
+              <label className="max-[425px]:text-[20px] text-[20px] font-title font-medium mb-4">
+                Trạng thái:
+                <select
+                  name="status"
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="focus:outline-none text-[20px] font-title font-thin"
+                >
+                  <option value={status} hidden selected disabled>
+                    {status === "paid-delivering"
+                      ? "Thanh toán - Chờ giao hàng"
+                      : status === "paid-delivered"
+                      ? "Thanh toán - Đã giao hàng"
+                      : status === "paid-refund"
+                      ? "Thanh toán - Chờ hoàn tiền"
+                      : status === "paid-refunded"
+                      ? "Thanh toán - Đã hoàn tiền"
+                      : "Choose"}
+                  </option>
+                  <option value="paid-delivering">
+                    Thanh toán - Chờ giao hàng
+                  </option>
+                  <option value="paid-delivered">
+                    Thanh toán - Đã giao hàng
+                  </option>
+                  <option value="paid-refund">
+                    Thanh toán - Chờ hoàn tiền
+                  </option>
+                  <option value="paid-refunded">
+                    Thanh toán - Đã hoàn tiền
+                  </option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-1">
+          {_id && (
+            <>
+              <button
+                type="submit"
+                className="text-[20px] p-1 text-center border-blue-600 bg-blue-600 border-2 rounded-md font-bold text-white mt-2"
+              >
+                Sửa
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push("/orders")}
+                className="text-[20px] p-1 text-center border-2 border-gray-400 rounded-md font-bold text-white mt-2 bg-gray-400 ml-4"
+              >
+                Quay lại
+              </button>
+            </>
+          )}
+        </div>
+      </form>
+    </>
   );
 };
 
-export default ProductForm;
+export default OrderForm;

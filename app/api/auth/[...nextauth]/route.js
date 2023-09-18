@@ -47,7 +47,12 @@ export const authOptions = {
   callbacks: {
     jwt: async ({ token, user, session }) => {
       if (user) {
-        return { ...token, id: user.id, name: user.username };
+        return {
+          ...token,
+          id: user.id,
+          name: user.username,
+          role: user.username,
+        };
       }
       return token;
     },
@@ -58,6 +63,7 @@ export const authOptions = {
           ...session.user,
           id: token.id,
           name: token.name,
+          role: token.role,
         },
       };
     },

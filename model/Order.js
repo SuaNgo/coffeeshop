@@ -10,6 +10,8 @@ const OrderSchema = new Schema(
     streetAddress: String,
     country: String,
     paid: Boolean,
+    status: String,
+    employee: String,
   },
   {
     timestamps: true,

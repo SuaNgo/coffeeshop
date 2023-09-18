@@ -8,12 +8,11 @@ import { authOptions } from "../auth/[...nextauth]/route";
 export async function POST(request) {
   await mongooseConnect();
   const res = await request.json();
-  const { name, parentCategory, properties } = res;
+  const { name, parentCategory } = res;
 
   await Category.create({
     name,
     parentCategory: parentCategory || undefined,
-    properties,
   });
 
   return NextResponse.json(res);
@@ -30,8 +29,11 @@ export async function GET(request) {
       return NextResponse.json(
         await Category.findById(url.searchParams.get("id"))
       );
+    } else if (url.searchParams.has("product")) {
+      return NextResponse.json(
+        await Category.find({ parentCategory: { $exists: true } })
+      );
     }
-
     return NextResponse.json(await Category.find().populate("parentCategory"));
   }
 }
@@ -40,12 +42,12 @@ export async function PUT(request) {
   await mongooseConnect();
   const res = await request.json();
 
-  const { name, parentCategory, properties, _id } = res;
+  const { name, parentCategory, _id } = res;
 
   return NextResponse.json(
     await Category.updateOne(
       { _id },
-      { name, parentCategory: parentCategory || undefined, properties }
+      { name, parentCategory: parentCategory || undefined }
     )
   );
 }

@@ -11,13 +11,14 @@ export async function POST(request) {
 
   const res = await request.json();
 
-  const { username, password } = res;
+  const { username, password, role } = res;
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   await Admin.create({
     username,
     password: hashedPassword,
+    role,
   });
 
   return NextResponse.json(res);
@@ -43,11 +44,11 @@ export async function GET(request) {
 export async function PUT(request) {
   await mongooseConnect();
   const res = await request.json();
-  const { username, password, _id } = res;
+  const { username, password, role, _id } = res;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   return NextResponse.json(
-    await Admin.updateOne({ _id }, { username, password: hashedPassword })
+    await Admin.updateOne({ _id }, { username, password: hashedPassword, role })
   );
 }
 

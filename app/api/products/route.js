@@ -3,6 +3,7 @@ import { Product } from "@/model/Product";
 import { NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
+import mongoose from "mongoose";
 
 // Handles POST requests to /api
 export async function POST(request) {
@@ -19,6 +20,7 @@ export async function POST(request) {
       images,
       properties,
       discount,
+      quantity,
     } = res;
 
     await Product.create({
@@ -29,6 +31,7 @@ export async function POST(request) {
       images,
       properties,
       discount,
+      quantity,
     });
 
     return NextResponse.json(res);
@@ -47,6 +50,13 @@ export async function GET(request) {
     if (url.searchParams.get("id")) {
       return NextResponse.json(
         await Product.findById(url.searchParams.get("id"))
+      );
+    } else if (url.searchParams.get("idCat")) {
+      const id = url.searchParams.get("idCat");
+      return NextResponse.json(
+        await Product.find({
+          category: id,
+        })
       );
     }
 
@@ -67,6 +77,7 @@ export async function PUT(request) {
     properties,
     images,
     discount,
+    quantity,
     _id,
   } = res;
 
@@ -81,6 +92,7 @@ export async function PUT(request) {
         properties,
         images,
         discount,
+        quantity,
       }
     )
   );
