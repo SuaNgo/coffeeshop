@@ -10,6 +10,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
+import DialogModal from "../Dialog";
 
 const ProductForm = ({
   _id,
@@ -34,6 +35,8 @@ const ProductForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [discount, setDiscount] = useState(existingDiscount || "");
   const [quantity, setQuantity] = useState(existingQuantity || "");
+  const [isOpen, setIsOpen] = useState(false);
+
   const router = useRouter();
   useEffect(() => {
     axios.get("/api/categories?product=").then((res) => {
@@ -42,6 +45,7 @@ const ProductForm = ({
   }, []);
   const createProduct = async (e) => {
     e.preventDefault();
+
     const products = {
       product,
       category,
@@ -57,8 +61,9 @@ const ProductForm = ({
     } else {
       axios.post("/api/products", products);
     }
-
-    router.push("/products");
+    setTimeout(() => {
+      router.push("/products");
+    }, 2000);
   };
 
   const uploadImage = async (e) => {
@@ -81,28 +86,6 @@ const ProductForm = ({
     });
   };
 
-  // const setProductProp = (propName, value) => {
-  //   setProductProperties((prev) => {
-  //     const newProductProps = { ...prev };
-  //     newProductProps[propName] = value;
-  //     return newProductProps;
-  //   });
-  // };
-
-  // const propertiesToFill = [];
-  // if (categories.length > 0 && category) {
-  //   let catInfo = categories.find(({ _id }) => _id === category);
-  //   propertiesToFill.push(...catInfo.properties);
-
-  //   while (catInfo?.parent?._id) {
-  //     const parentCat = categories.find(
-  //       ({ _id }) => _id === catInfo?.parent?._id
-  //     );
-  //     propertiesToFill.push(...parentCat.properties);
-  //     catInfo = parentCat;
-  //   }
-  // }
-
   return (
     <form onSubmit={createProduct}>
       <label className="text-gray-600 text-[20px] font-title font-normal">
@@ -110,6 +93,8 @@ const ProductForm = ({
           Tên sản phẩm
         </span>
         <input
+          name="product"
+          required
           type="text"
           placeholder="Sản phẩm"
           value={product}
@@ -136,24 +121,6 @@ const ProductForm = ({
               </option>
             ))}
         </select>
-        {/* {propertiesToFill.length > 0 &&
-          propertiesToFill.map((p) => (
-            <div key={p.name} className="">
-              <label>{p.name[0].toUpperCase() + p.name.substring(1)}</label>
-              <div>
-                <select
-                  value={productProperties[p.name]}
-                  onChange={(e) => setProductProp(p.name, e.target.value)}
-                >
-                  {p.values.split(",").map((v, index) => (
-                    <option key={index} value={v}>
-                      {v}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          ))} */}
       </label>
       <div className="mt-2">
         <label className="text-gray-600 text-[20px] font-title font-normal">
@@ -288,6 +255,7 @@ const ProductForm = ({
           <button
             type="submit"
             className="text-[20px] p-1 text-center border-blue-600 bg-blue-600 border-2 rounded-md font-bold text-white mt-2"
+            onClick={() => setIsOpen(true)}
           >
             Sửa sản phẩm
           </button>
@@ -299,12 +267,26 @@ const ProductForm = ({
           </button>
         </>
       ) : (
-        <button
-          type="submit"
-          className="text-[20px] p-1 text-center border-blue-600 bg-blue-600 border-2 rounded-md font-bold text-white mt-2"
-        >
-          Thêm sản phẩm
-        </button>
+        <>
+          <button
+            type="submit"
+            className="text-[20px] p-1 text-center border-blue-600 bg-blue-600 border-2 rounded-md font-bold text-white mt-2"
+            // onClick={() => setIsOpen(true)}
+          >
+            Thêm sản phẩm
+          </button>
+          <button
+            onClick={() => router.push("/products")}
+            className="text-[20px] p-1 text-center border-2 border-gray-400 rounded-md font-bold text-white mt-2 bg-gray-400 ml-4"
+          >
+            Quay lại
+          </button>
+        </>
+      )}
+      {isOpen ? (
+        <DialogModal isOpen={isOpen} closeModal={() => setIsOpen(false)} />
+      ) : (
+        <></>
       )}
     </form>
   );

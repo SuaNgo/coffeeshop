@@ -60,7 +60,7 @@ const Navbar = () => {
             }
           >
             <FontAwesomeIcon icon={faHome} />
-            <span className="text-[28px] leading-7">Dashboard</span>
+            <span className="text-[28px] leading-7">Trang chủ</span>
           </Link>
           <Link
             href="/products"
@@ -69,7 +69,7 @@ const Navbar = () => {
             }
           >
             <FontAwesomeIcon icon={faMugHot} />
-            <span className="text-[28px] leading-7">Products</span>
+            <span className="text-[28px] leading-7">Sản phẩm</span>
           </Link>
           <Link
             href="/categories"
@@ -78,7 +78,7 @@ const Navbar = () => {
             }
           >
             <FontAwesomeIcon icon={faListDots} />
-            <span className="text-[28px] leading-7">Categories</span>
+            <span className="text-[28px] leading-7">Danh mục</span>
           </Link>
           <Link
             href="/orders"
@@ -87,7 +87,7 @@ const Navbar = () => {
             }
           >
             <FontAwesomeIcon icon={faCubes} />
-            <span className="text-[28px] leading-7">Orders</span>
+            <span className="text-[28px] leading-7">Đơn hàng</span>
           </Link>
           <Link
             href="/settings"
@@ -96,7 +96,7 @@ const Navbar = () => {
             }
           >
             <FontAwesomeIcon icon={faGear} />
-            <span className="text-[28px] leading-7">Settings</span>
+            <span className="text-[28px] leading-7">Tài khoản</span>
           </Link>
 
           <button
@@ -106,7 +106,7 @@ const Navbar = () => {
             }}
           >
             <FontAwesomeIcon icon={faRightFromBracket} flip="horizontal" />
-            <span className="text-[28px] leading-7">Logout</span>
+            <span className="text-[28px] leading-7">Đăng xuất</span>
           </button>
         </nav>
       </aside>

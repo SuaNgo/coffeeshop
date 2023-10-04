@@ -2,16 +2,9 @@
 
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import axios from "axios";
 
-const Popup = ({ isOpen, closeModal, id, setUpdateDatas, type }) => {
-  const deleteObject = async () => {
-    if (type === "product") await axios.delete("/api/products?id=" + id);
-    else if (type === "categories")
-      await axios.delete("/api/categories?id=" + id);
-    else if (type === "setting") await axios.delete("/api/settings?id=" + id);
-    else if (type === "order") await axios.delete("/api/orders?id=" + id);
-    setUpdateDatas(true);
+const DialogModal = ({ isOpen, closeModal }) => {
+  const closeDialogHandler = () => {
     closeModal();
   };
   return (
@@ -45,19 +38,15 @@ const Popup = ({ isOpen, closeModal, id, setUpdateDatas, type }) => {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="relative w-full max-w-lg max-h-[90vh] overflow-hidden transform rounded-2xl bg-white text-center shadow-xl transition-all p-4">
-                  <h1 className="text-[24px]">Bạn có muốn xoá không</h1>
+                  <h1 className="text-[24px]">
+                    Gửi thành công, quay lại trang
+                  </h1>
                   <div className="mt-4 flex gap-2 justify-center">
                     <button
                       className="bg-red-600 py-1 px-5 rounded-xl text-white"
-                      onClick={deleteObject}
+                      onClick={closeDialogHandler}
                     >
                       Đồng ý
-                    </button>
-                    <button
-                      className="bg-gray-300 py-1 px-5 rounded-xl"
-                      onClick={closeModal}
-                    >
-                      Không
                     </button>
                   </div>
                 </Dialog.Panel>
@@ -70,4 +59,4 @@ const Popup = ({ isOpen, closeModal, id, setUpdateDatas, type }) => {
   );
 };
 
-export default Popup;
+export default DialogModal;

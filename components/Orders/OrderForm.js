@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import DialogModal from "../Dialog";
 
 const OrderForm = ({
   _id,
@@ -19,9 +20,8 @@ const OrderForm = ({
 }) => {
   const router = useRouter();
   const { data: session } = useSession();
-  const roleCheck = session?.user.role === "admin";
   const [status, setStatus] = useState(existingStatus || "");
-
+  const [isOpen, setIsOpen] = useState(false);
   const changeOrder = async (e) => {
     e.preventDefault();
     const order = {
@@ -37,8 +37,9 @@ const OrderForm = ({
     };
 
     await axios.put("/api/orders", { ...order, _id });
-
-    router.push("/orders");
+    setTimeout(() => {
+      router.push("/orders");
+    }, 2000);
   };
   const propData =
     existingItems[0].price_data.product_data.description.split(",");
@@ -136,7 +137,7 @@ const OrderForm = ({
                   onChange={(e) => setStatus(e.target.value)}
                   className="focus:outline-none text-[20px] font-title font-thin"
                 >
-                  <option value={status} hidden selected disabled>
+                  <option value={status} hidden disabled>
                     {status === "paid-delivering"
                       ? "Thanh toán - Chờ giao hàng"
                       : status === "paid-delivered"
@@ -170,6 +171,7 @@ const OrderForm = ({
             <>
               <button
                 type="submit"
+                onClick={() => setIsOpen(true)}
                 className="text-[20px] p-1 text-center border-blue-600 bg-blue-600 border-2 rounded-md font-bold text-white mt-2"
               >
                 Sửa
@@ -184,6 +186,11 @@ const OrderForm = ({
             </>
           )}
         </div>
+        {isOpen ? (
+          <DialogModal isOpen={isOpen} closeModal={() => setIsOpen(false)} />
+        ) : (
+          <></>
+        )}
       </form>
     </>
   );

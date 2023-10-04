@@ -10,7 +10,7 @@ const SettingsTable = ({ data, setUpdateDatas }) => {
   const roleCheck = session?.user.role === "admin";
   return (
     <>
-      <div className="flex justify-between" key={data._id}>
+      <div className="flex justify-between mb-4" key={data._id}>
         <h1 className="max-[425px]:text-[20px] text-[24px] font-title font-medium">
           {data.username}
         </h1>

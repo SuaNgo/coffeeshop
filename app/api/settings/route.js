@@ -44,7 +44,11 @@ export async function GET(request) {
 export async function PUT(request) {
   await mongooseConnect();
   const res = await request.json();
-  const { username, password, role, _id } = res;
+  const { username, oldPassword, existingPassword, password, role, _id } = res;
+  const isValidPassword = await bcrypt.compare(oldPassword, existingPassword);
+  if (!isValidPassword) {
+    return NextResponse.json({ message: "Sai mật khẩu cũ" }, { status: 400 });
+  }
   const hashedPassword = await bcrypt.hash(password, 10);
 
   return NextResponse.json(

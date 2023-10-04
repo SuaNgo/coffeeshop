@@ -15,6 +15,20 @@ export async function GET(request) {
       return NextResponse.json(
         await Order.findById(url.searchParams.get("id"))
       );
+    } else if (url.searchParams.has("idOrder")) {
+      return NextResponse.json(await Order.find({ status: "paid-delivered" }));
+    } else if (url.searchParams.has("idOrderDelivering")) {
+      return NextResponse.json(await Order.find({ status: "paid-delivering" }));
+    } else if (url.searchParams.has("idOrderRef")) {
+      return NextResponse.json(await Order.find({ status: "paid-refunded" }));
+    } else if (url.searchParams.has("idOrderWait")) {
+      return NextResponse.json(await Order.find({ status: "paid-refund" }));
+    } else if (url.searchParams.has("idNew")) {
+      return NextResponse.json(
+        await Order.find({
+          createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        })
+      );
     }
 
     return NextResponse.json(await Order.find());

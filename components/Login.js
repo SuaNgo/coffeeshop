@@ -2,29 +2,35 @@
 
 import { signIn } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const [error, setError] = useState(null);
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const search = searchParams.has("error");
+    if (search) {
+      setError("Sai thông tin tài khoản hoặc mật khẩu");
+    } else {
+      setError(null);
+    }
+  }, []);
+
   const sendLoginInfo = async (e) => {
     e.preventDefault();
-    const res = await signIn("credentials", {
+    await signIn("credentials", {
       username: username,
       password: password,
       callbackUrl: "/dashboard",
     });
-    if (res?.error) {
-      setError("invalid email or password");
-    } else {
-      setError(null);
-    }
   };
+
   return (
     <>
-      <div className="w-[60%] h-[80%] bg-white rounded-3xl grid grid-cols-2 overflow-hidden">
+      <div className="w-[60%] h-[80%] bg-white rounded-3xl grid grid-cols-2 overflow-hidden relative">
         <div className="w-full h-full overflow-hidden relative rounded-3xl">
           <Image
             src="/login-photo.avif"
@@ -75,16 +81,15 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   value={password}
                   className="my-2 rounded-md"
-                  pattern="^(?=[a-zA-Z0-9._]{6,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
-                  title="has special characters"
                 />
               </label>
               <button
                 type="submit"
-                className="flex border rounded-md w-full items-center py-3 justify-center mt-2  bg-gradient-to-r from-[#169D79] to-[#1FC798]"
+                className="flex border rounded-md w-full items-center py-3 justify-center mt-2  bg-gradient-to-r from-[#169D79] to-[#1FC798] mb-4"
               >
                 <span className="text-[16px] leading-4">Login</span>
               </button>
+              <span className="text-red-400">{error}</span>
             </form>
           </div>
         </div>

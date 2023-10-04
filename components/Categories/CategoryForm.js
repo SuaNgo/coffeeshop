@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import DialogModal from "../Dialog";
 
 const CategoryForm = ({
   _id,
@@ -12,7 +13,7 @@ const CategoryForm = ({
   const [parentCategory, setParentCategory] = useState(
     existingParentCategory || ""
   );
-
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -32,8 +33,9 @@ const CategoryForm = ({
     } else {
       await axios.post("/api/categories", category);
     }
-
-    router.push("/categories");
+    setTimeout(() => {
+      router.push("/categories");
+    }, 2000);
   };
 
   return (
@@ -69,6 +71,7 @@ const CategoryForm = ({
               <button
                 type="submit"
                 className="text-[20px] p-1 text-center border-blue-600 bg-blue-600 border-2 rounded-md font-bold text-white mt-2"
+                onClick={() => setIsOpen(true)}
               >
                 Sửa
               </button>
@@ -84,6 +87,7 @@ const CategoryForm = ({
             <>
               <button
                 type="submit"
+                onClick={() => setIsOpen(true)}
                 className="text-[20px] p-1 text-center border-blue-600 bg-blue-600 border-2 rounded-md font-bold text-white mt-2"
               >
                 Thêm
@@ -98,6 +102,11 @@ const CategoryForm = ({
             </>
           )}
         </div>
+        {isOpen ? (
+          <DialogModal isOpen={isOpen} closeModal={() => setIsOpen(false)} />
+        ) : (
+          <></>
+        )}
       </form>
     </>
   );

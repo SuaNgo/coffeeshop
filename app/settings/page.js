@@ -35,7 +35,7 @@ const Settings = () => {
         <div className="mt-2 max-[1024px]:mt-20">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-[40px] leading-10 font-title font-semibold">
-              Setting
+              Tài khoản
             </h1>
             {roleCheck && (
               <Link

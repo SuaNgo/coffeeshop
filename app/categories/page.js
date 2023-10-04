@@ -26,7 +26,6 @@ const Categories = () => {
       setUpdateDatas(false);
     }
   }, [updatedDatas]);
-
   return (
     <main className="bg-login h-full w-full">
       <Layout>
